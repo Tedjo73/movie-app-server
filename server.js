@@ -11,7 +11,18 @@ app.use(cors());
 app.use(express.json());
 
 // Initialize Firebase Admin
-const serviceAccount = require('./serviceAccountKey.json');
+let serviceAccount;
+
+if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+  // Production: Use environment variable
+  console.log('Using Firebase credentials from environment variable');
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+} else {
+  // Development: Use local file
+  console.log('Using Firebase credentials from local file');
+  serviceAccount = require('./serviceAccountKey.json');
+}
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
@@ -320,10 +331,35 @@ app.post('/api/users', async (req, res) => {
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+  res.json({ status: 'OK', message: 'Movie API is running' });
+});
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Movie Review API - IMDb Style',
+    status: 'running',
+    endpoints: {
+      health: '/health',
+      movies: {
+        popular: '/api/movies/popular',
+        nowPlaying: '/api/movies/now-playing',
+        topRated: '/api/movies/top-rated',
+        search: '/api/movies/search?query=term',
+        details: '/api/movies/:id'
+      },
+      reviews: {
+        getByMovie: '/api/reviews/:movieId',
+        getByUser: '/api/user-reviews/:userId',
+        create: 'POST /api/reviews',
+        update: 'PUT /api/reviews/:id',
+        delete: 'DELETE /api/reviews/:id'
+      }
+    }
+  });
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🎬 Movie API running on port ${PORT}`);
 });
