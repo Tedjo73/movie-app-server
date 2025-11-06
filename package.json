@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "movie-app-server",
   "version": "1.0.0",
-  "description": "Movie platform backend",
+  "description": "Movie review API backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -16,5 +16,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.20"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
